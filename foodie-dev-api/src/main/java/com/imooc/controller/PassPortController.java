@@ -81,6 +81,8 @@ public class PassPortController {
 			user = setNullProperty(user);
 			CookieUtils.setCookie(request,response,"user",
 					JsonUtils.objectToJson(user),true);
+			// TODO 生产用户token ,存入redis
+			// TODO 同步购物车数据
 			return IMOOCJSONResult.ok(user);
 		} catch (Exception e) {
 			// 请求失败
@@ -111,6 +113,9 @@ public class PassPortController {
 		} catch (Exception e) {
 			return IMOOCJSONResult.errorMsg("用户登录-查询用户信息出错");
 		}
+
+		// TODO 生产用户token ,存入redis
+		// TODO 同步购物车数据
 
 		// 请求成功
 		return IMOOCJSONResult.ok(users);

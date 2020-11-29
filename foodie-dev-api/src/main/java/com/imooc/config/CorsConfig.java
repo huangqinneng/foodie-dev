@@ -21,7 +21,7 @@ public class CorsConfig {
 	public CorsFilter corsFilter(){
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		// 设置前端跨域问题 * -- 表示所有ip都可以访问
-		corsConfiguration.addAllowedOrigin("http://localhost:8089");
+		corsConfiguration.addAllowedOrigin("http://localhost:9090");
 		// 设置是否发生cookie信息
 		corsConfiguration.setAllowCredentials(true);
 		// 设置允许请求的方式

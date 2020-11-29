@@ -1,18 +1,151 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.imooc.mapper.ItemsMapper" >
-  <resultMap id="BaseResultMap" type="com.imooc.pojo.Items" >
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" property="id" jdbcType="VARCHAR" />
-    <result column="item_name" property="itemName" jdbcType="VARCHAR" />
-    <result column="cat_id" property="catId" jdbcType="INTEGER" />
-    <result column="root_cat_id" property="rootCatId" jdbcType="INTEGER" />
-    <result column="sell_counts" property="sellCounts" jdbcType="INTEGER" />
-    <result column="on_off_status" property="onOffStatus" jdbcType="INTEGER" />
-    <result column="created_time" property="createdTime" jdbcType="TIMESTAMP" />
-    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
-    <result column="content" property="content" jdbcType="LONGVARCHAR" />
-  </resultMap>
+<mapper namespace="com.imooc.mapper.ItemsMapper">
+    <resultMap id="BaseResultMap" type="com.imooc.pojo.Items">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="item_name" property="itemName" jdbcType="VARCHAR"/>
+        <result column="cat_id" property="catId" jdbcType="INTEGER"/>
+        <result column="root_cat_id" property="rootCatId" jdbcType="INTEGER"/>
+        <result column="sell_counts" property="sellCounts" jdbcType="INTEGER"/>
+        <result column="on_off_status" property="onOffStatus" jdbcType="INTEGER"/>
+        <result column="created_time" property="createdTime" jdbcType="TIMESTAMP"/>
+        <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP"/>
+        <result column="content" property="content" jdbcType="LONGVARCHAR"/>
+    </resultMap>
+
+    <resultMap id="ItemCommentVOMap" type="com.imooc.vo.ItemCommentVO">
+        <id column="commentLevel" property="commentLevel" jdbcType="INTEGER"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="specName" property="specName" jdbcType="VARCHAR"/>
+        <result column="createdTime" property="createdTime" jdbcType="TIMESTAMP"/>
+        <result column="face" property="face" jdbcType="VARCHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="queryItemComments" parameterType="java.util.Map" resultMap="ItemCommentVOMap">
+        select
+            ic.comment_level as commentLevel,
+            ic.content as content,
+            ic.spec_name as specName,
+            ic.created_time as createdTime,
+            u.face as face,
+            u.nickname as nickname
+        from
+            items_comments ic
+        LEFT JOIN users u on ic.user_id = u.id
+        where
+            ic.item_id = #{paramsMap.itemId}
+        <if test="paramsMap.level != '' and paramsMap.level != null ">
+            and ic.comment_level = #{paramsMap.level}
+        </if>
+
+    </select>
+
+    <select id="searchItems" parameterType="java.util.Map" resultType="com.imooc.vo.SearchItemsVO">
+        select
+            i.id as itemId,
+            i.item_name as itemName,
+            i.sell_counts as sellCounts,
+            ii.url as imgUrl,
+            tempSpec.price_discount as price
+        from
+            items i
+        LEFT JOIN
+            items_img ii on i.id = ii.item_id
+        left join (
+            select
+            item_id,min(price_discount) as price_discount
+            from
+            items_spec
+            group by item_id
+        ) tempSpec on i.id = tempSpec.item_id
+        where
+            ii.is_main = '1'
+            <if test=" paramsMap.keywords != '' and paramsMap.keywords != null ">
+                and i.item_name like '%${paramsMap.keywords}%'
+            </if>
+        order by
+        <choose>
+            <!--k:默认，代表默认排序，根据name
+            c:根据销量排序
+            p:根据价格排序-->
+            <when test="paramsMap.sort == &quot;c&quot; ">
+                i.sell_counts desc
+            </when>
+            <when test="paramsMap.sort == &quot;p&quot; ">
+                tempSpec.price_discount asc
+            </when>
+            <otherwise>
+                i.item_name asc
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="searchItemsByThirdCat" parameterType="java.util.Map" resultType="com.imooc.vo.SearchItemsVO">
+        select
+            i.id as itemId,
+            i.item_name as itemName,
+            i.sell_counts as sellCounts,
+            ii.url as imgUrl,
+            tempSpec.price_discount as price
+        from
+            items i
+        LEFT JOIN
+            items_img ii on i.id = ii.item_id
+        left join (
+            select
+            item_id,min(price_discount) as price_discount
+            from
+            items_spec
+            group by item_id
+        ) tempSpec on i.id = tempSpec.item_id
+        where
+            ii.is_main = '1'
+            and i.cat_id = #{paramsMap.catId}
+        order by
+        <choose>
+            <!--k:默认，代表默认排序，根据name
+            c:根据销量排序
+            p:根据价格排序-->
+            <when test="paramsMap.sort == &quot;c&quot; ">
+                i.sell_counts desc
+            </when>
+            <when test="paramsMap.sort == &quot;p&quot; ">
+                tempSpec.price_discount asc
+            </when>
+            <otherwise>
+                i.item_name asc
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="queryItemBySpecIds" parameterType="java.util.List" resultType="com.imooc.vo.ShopcartVO">
+        select
+            its.item_id as itemId,
+            i.item_name as itemName,
+            ii.url as itemImgUrl,
+            its.id as specId,
+            its.`name` as specName,
+            its.price_discount as priceDiscount,
+            its.price_normal as priceNormal
+        from
+            items_spec its
+        left JOIN
+            items i on its.item_id = i.id
+        left JOIN
+            items_img ii on ii.item_id = its.item_id
+        where
+            ii.is_main = '1'
+        and
+            its.id in
+            <foreach collection="paramsList" index="index"
+                     item="specId" open="(" close=")" separator=",">
+                #{specId}
+            </foreach>
+
+
+    </select>
 </mapper>
