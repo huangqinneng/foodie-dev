@@ -148,4 +148,17 @@
 
 
     </select>
+
+    <update id="decreaseItemSpecStock" parameterType="java.util.Map">
+        update
+          items_spec
+        set
+          stock = stock - #{paramsMap.pendingCounts}
+        where
+          id = #{paramsMap.specId}
+        and
+          stock >= #{paramsMap.pendingCounts}
+    </update>
+
+
 </mapper>

@@ -42,4 +42,11 @@ public interface ItemsMapper extends MyMapper<Items> {
      * @return
      */
     List<ShopcartVO> queryItemBySpecIds(@Param("paramsList") List<String> paramsList);
+
+	/**
+	 * 减少库存
+	 * @param paramsMap
+	 * @return
+	 */
+    int decreaseItemSpecStock(@Param(value = "paramsMap") Map<String,Object> paramsMap);
 }

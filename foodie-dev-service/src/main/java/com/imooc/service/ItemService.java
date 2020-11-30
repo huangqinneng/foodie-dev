@@ -1,9 +1,11 @@
 package com.imooc.service;
 
-import com.imooc.pojo.*;
+import com.imooc.pojo.Items;
+import com.imooc.pojo.ItemsImg;
+import com.imooc.pojo.ItemsParam;
+import com.imooc.pojo.ItemsSpec;
 import com.imooc.utils.PagedGridResult;
 import com.imooc.vo.CommentLevelCountsVO;
-import com.imooc.vo.ItemCommentVO;
 import com.imooc.vo.ShopcartVO;
 
 import java.util.List;
@@ -86,4 +88,18 @@ public interface ItemService {
 	 * @return
 	 */
 	List<ShopcartVO>  queryItemBySpecIds(String specIds);
+
+	/**
+	 * 根据商品规格id查询具体规格信息
+	 * @param specId
+	 * @return
+	 */
+	ItemsSpec queryItemSpecById(String specId);
+
+	String queryItemMainImgById(String itemId);
+
+	/**
+	 * 减库存
+	 */
+	void decreaseItemSpecStock(String itemSpecId, int buyCounts);
 }

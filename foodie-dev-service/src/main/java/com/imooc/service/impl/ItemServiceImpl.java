@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.imooc.enums.CommentLevel;
+import com.imooc.enums.YesOrNo;
 import com.imooc.mapper.*;
 import com.imooc.pojo.*;
 import com.imooc.service.ItemService;
@@ -13,7 +14,6 @@ import com.imooc.vo.CommentLevelCountsVO;
 import com.imooc.vo.ItemCommentVO;
 import com.imooc.vo.SearchItemsVO;
 import com.imooc.vo.ShopcartVO;
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,5 +171,37 @@ public class ItemServiceImpl implements ItemService {
         List<ShopcartVO> shopcartVOS = itemsMapper.queryItemBySpecIds(specIdsList);
         return shopcartVOS;
     }
+
+	@Transactional(propagation = Propagation.SUPPORTS)
+	@Override
+	public ItemsSpec queryItemSpecById(String specId) {
+		return itemsSpecMapper.selectByPrimaryKey(specId);
+	}
+
+	@Transactional(propagation = Propagation.SUPPORTS)
+	@Override
+	public String queryItemMainImgById(String itemId) {
+		ItemsImg itemsImg = new ItemsImg();
+		itemsImg.setItemId(itemId);
+		itemsImg.setIsMain(YesOrNo.YES.type);
+		ItemsImg result = itemsImgMapper.selectOne(itemsImg);
+		return result != null ? result.getUrl() : "";
+	}
+
+	@Transactional(propagation = Propagation.REQUIRED)
+	@Override
+	public void decreaseItemSpecStock(String itemSpecId, int buyCounts) {
+    	// synchronized 不推荐使用，集群下无用，性能低下
+		// 锁数据库 不推荐，导致数据库性能低下
+		// 分布式锁 zookeeper redis
+		// 库存是公共资源，并发问题
+		Map<String,Object> paramsMap = new HashMap<>();
+		paramsMap.put("specId",itemSpecId);
+		paramsMap.put("pendingCounts",buyCounts);
+		int result = itemsMapper.decreaseItemSpecStock(paramsMap);
+		if(result != 1) {
+			throw new RuntimeException("订单创建失败: 库存不足!");
+		}
+	}
 
 }
