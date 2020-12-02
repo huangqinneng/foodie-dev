@@ -4,14 +4,13 @@ import com.imooc.service.OrderService;
 import com.imooc.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 /**
  * @Auther: huangqn
  * @Date: 2020/11/30 16:32
  * @Description:
  */
-@Component
+//@Component
 public class OrderJob {
 
 	@Autowired

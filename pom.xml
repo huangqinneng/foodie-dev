@@ -6,7 +6,7 @@
 
     <groupId>com.imooc</groupId>
     <artifactId>foodie-dev</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-snapshot</version>
     <!-- 子模块 -->
     <modules>
         <module>foodie-dev-common</module>
