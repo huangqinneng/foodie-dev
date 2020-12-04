@@ -1,5 +1,9 @@
 package com.imooc.controller;
 
+import com.imooc.pojo.Orders;
+import com.imooc.service.center.MyOrdersService;
+import com.imooc.utils.IMOOCJSONResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -46,4 +50,20 @@ public class BaseController {
 //	public static final String IMAGE_USER_FACE_LOCATION = "classpath:/images/";
 
 
+	@Autowired
+	protected MyOrdersService myOrdersService;
+
+	/**
+	 * 校验订单是否存在
+	 * @param userId
+	 * @param orderId
+	 * @return
+	 */
+	protected IMOOCJSONResult checkOrder(String userId, String orderId){
+		Orders orders = myOrdersService.queryMyOrder(userId, orderId);
+		if (orders == null){
+			return IMOOCJSONResult.errorMsg("订单不存在");
+		}
+		return IMOOCJSONResult.ok(orders);
+	}
 }

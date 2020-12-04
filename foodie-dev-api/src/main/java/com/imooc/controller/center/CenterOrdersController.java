@@ -1,15 +1,13 @@
 package com.imooc.controller.center;
 
 import com.imooc.controller.BaseController;
-import com.imooc.pojo.Orders;
-import com.imooc.service.center.MyOrdersService;
 import com.imooc.utils.IMOOCJSONResult;
 import com.imooc.utils.PagedGridResult;
+import com.imooc.vo.OrderStatusCountsVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,8 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("myorders")
 public class CenterOrdersController extends BaseController {
 
-	@Autowired
-	private MyOrdersService myOrdersService;
+
 
 	@PostMapping("/query")
 	@ApiOperation(value = "查询订单列表", notes = "查询订单列表", httpMethod = "POST")
@@ -108,20 +105,43 @@ public class CenterOrdersController extends BaseController {
 		}
 		boolean b = myOrdersService.deleteOrder(userId,orderId);
 		if(!b){
-			return IMOOCJSONResult.errorMsg("订单 失败");
+			return IMOOCJSONResult.errorMsg("订单删除失败");
 		}
 
 		return IMOOCJSONResult.ok();
 	}
 
 
-	private IMOOCJSONResult checkOrder(String userId,String orderId){
-		Orders orders = myOrdersService.queryMyOrder(userId, orderId);
-		if (orders == null){
-			return IMOOCJSONResult.errorMsg("订单不存在");
+	@PostMapping("/statusCounts")
+	@ApiOperation(value = "获得订单数概况", notes = "获得订单数概况", httpMethod = "POST")
+	public IMOOCJSONResult statusCounts(@ApiParam(name = "userId", value = "用户Id", required = true)
+	                              @RequestParam String userId
+	) {
+		if (StringUtils.isBlank(userId)) {
+			return IMOOCJSONResult.errorMsg("用户Id不能为空");
 		}
-		return IMOOCJSONResult.ok();
+		OrderStatusCountsVO orderStatusCounts = myOrdersService.getOrderStatusCounts(userId);
+
+		return IMOOCJSONResult.ok(orderStatusCounts);
 	}
+
+	@PostMapping("/trend")
+	@ApiOperation(value = "获得订单数概况", notes = "获得订单数概况", httpMethod = "POST")
+	public IMOOCJSONResult trend(@ApiParam(name = "userId", value = "用户Id", required = true)
+	                                    @RequestParam String userId,
+			                             @ApiParam(name = "page", value = "下一页，页数", required = false)
+			                             @RequestParam Integer page,
+			                             @ApiParam(name = "pageSize", value = "每页显示几条", required = false)
+	                                     @RequestParam  Integer pageSize
+	) {
+		if (StringUtils.isBlank(userId)) {
+			return IMOOCJSONResult.errorMsg("用户Id不能为空");
+		}
+		PagedGridResult ordersTrend = myOrdersService.getOrdersTrend(userId, page, pageSize);
+
+		return IMOOCJSONResult.ok(ordersTrend);
+	}
+
 
 
 

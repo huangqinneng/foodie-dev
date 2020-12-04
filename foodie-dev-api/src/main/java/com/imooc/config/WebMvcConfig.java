@@ -28,6 +28,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/**")
 				.addResourceLocations("classpath:/META-INF/resources/")
-				.addResourceLocations("file:/D:\\project\\foodie\\foodie-dev\\foodie-dev-api\\src\\main\\resources\\images\\");
+//				.addResourceLocations("file:/D:\\project\\foodie\\foodie-dev\\foodie-dev-api\\src\\main\\resources\\images\\")
+				.addResourceLocations("file:/home/huangqn/tomcat/foodie-tomcat/images/");
 	}
 }

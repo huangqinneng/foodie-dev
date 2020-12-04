@@ -29,6 +29,7 @@
         <result column="realPayAmount" property="realPayAmount" jdbcType="INTEGER"/>
         <result column="postAmount" property="postAmount" jdbcType="INTEGER"/>
         <result column="orderStatus" property="orderStatus" jdbcType="INTEGER"/>
+        <result column="isComment" property="isComment" jdbcType="INTEGER"/>
         <collection property="subOrderItemList"
                     select="getSubItems"
                     column="orderId"
@@ -50,7 +51,8 @@
             od.pay_method as payMethod,
             od.real_pay_amount as realPayAmount,
             od.post_amount as postAmount,
-            os.order_status as orderStatus
+            os.order_status as orderStatus,
+            od.is_comment as isComment
         FROM
             orders od
         left join
@@ -108,6 +110,47 @@
         </if>
         order by
         od.updated_time asc
+    </select>
+
+
+    <select id="getMyOrderStatusCounts" parameterType="Map" resultType="int">
+        SELECT
+            count(1)
+        FROM
+            orders o
+        left JOIN
+            order_status os on o.id = os.order_id
+        where
+            o.user_id = #{paramsMap.userId}
+        and
+            os.order_status = #{paramsMap.orderStatus}
+        <if test="paramsMap.isComment != null and paramsMap.isComment != '' ">
+            and o.is_comment = #{paramsMap.isComment}
+        </if>
+    </select>
+
+    <select id="getMyOrderTrend" parameterType="Map" resultType="com.imooc.pojo.OrderStatus">
+        SELECT
+            os.order_id as orderId,
+            os.order_status as orderStatus,
+            os.created_time as createdTime,
+            os.pay_time as payTime,
+            os.deliver_time as deliverTime,
+            os.success_time as successTime,
+            os.close_time as closeTime,
+            os.comment_time as commentTime
+        FROM
+            orders o
+        left JOIN
+            order_status os on o.id = os.order_id
+        where
+            o.user_id = #{paramsMap.userId}
+        and
+            os.order_status in (20,30,40)
+        and
+            o.is_delete = 0
+        order by
+            os.order_id desc
     </select>
 
 </mapper>

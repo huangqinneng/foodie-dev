@@ -21,7 +21,7 @@ public class Test {
 
 	@org.junit.Test
 	public void test(){
-		System.out.println(stuService.getStuInfo(1203).toString());
+		System.out.println("");
 	}
 
 }

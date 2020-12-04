@@ -1,7 +1,6 @@
 package com.imooc.resource;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,12 +9,12 @@ import org.springframework.stereotype.Component;
  * @Description:
  */
 @Component
-@ConfigurationProperties(prefix = "file")
-@PropertySource("classpath:file-upload-dev.properties")
 public class FileUpload {
 
+	@Value(value = "${file.imageUserFaceLocation}")
 	private String imageUserFaceLocation;
 
+	@Value("${file.imageServerUrl}")
 	private String imageServerUrl;
 
 	public String getImageUserFaceLocation() {
