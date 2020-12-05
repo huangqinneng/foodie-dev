@@ -32,4 +32,4 @@ mybatis:
 ############################################################
 file:
   imageUserFaceLocation: "/home/huangqn/tomcat/foodie-tomcat/images/"
-  imageServerUrl: "http://localhost:8088/faces/"
+  imageServerUrl: "http://192.168.10.102:8088/foodie-dev-api/faces/"

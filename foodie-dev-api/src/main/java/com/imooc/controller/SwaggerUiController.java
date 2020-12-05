@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.UriComponents;
-import springfox.documentation.annotations.ApiIgnore;
 import springfox.documentation.service.Documentation;
 import springfox.documentation.service.Tag;
 import springfox.documentation.spring.web.DocumentationCache;
@@ -45,8 +44,8 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
  * @Date: 2020/11/26 15:39
  * @Description:
  */
-@Controller
-@ApiIgnore
+//@Controller
+//@ApiIgnore
 public class SwaggerUiController {
 	/***
 	 * sort排序接口
